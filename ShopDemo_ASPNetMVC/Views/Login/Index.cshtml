@@ -1,0 +1,65 @@
+﻿@model User
+@{
+    ViewData["Title"] = "Login Page";
+}
+
+<!-- ***** Main Banner Area Start ***** -->
+<div class="page-heading" style="background-image:url(../images/loginBanner.jpg);" id="top">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="inner-content">
+                    <h2>Login</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ***** Main Banner Area End ***** -->
+
+<!-- ***** Order Area Starts ***** -->
+<div class="contact-us">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10">
+                <div class="section-heading">
+                    <h2>Login</h2>
+                </div>
+                <form id="order-form" method="post">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <fieldset>
+                                <input asp-for="Email" type="text" id="Email" placeholder="Your Email" required="">
+                                <span style="color:red" asp-validation-for="Email"></span>
+                            </fieldset>
+                        </div>
+                        <div class="col-lg-12" style="padding-top:1rem;padding-bottom:1rem;">
+                            <fieldset>
+                                <input asp-for="Password" type="password" id="Password" placeholder="Your password" required="">
+                                <span style="color:red" asp-validation-for="Password"></span>
+                            </fieldset>
+                        </div>
+                        
+                        <div class="col-lg-12">
+                            <button id="submit" type="submit" class="main-dark-button"><i class="">IN</i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ***** Order Area Ends ***** -->
+
+@section Scripts{
+            <script src="~/js/SetOrderForm.js"></script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial"); 
+    }
+    <script type="text/javascript">
+        $('#submit').on('click', function (e) {
+            $('#login-form').validate();
+            
+        });
+    </script>
+}

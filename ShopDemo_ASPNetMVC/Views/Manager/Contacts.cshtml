@@ -1,0 +1,160 @@
+﻿@using ShopDemo_ASPNetMVC.Data;
+@model PaginatedList<ContactMessage>
+@{
+    ViewData["Title"] = "Manager Contact";
+}
+<!-- ***** Main Banner Area Start ***** -->
+<div class="page-manager" id="top">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="inner-content">
+                    <h2>Management Contacts</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ***** Main Banner Area End ***** -->
+<section class="section" id="cart">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="section-heading">
+                    <h2>Your Clothes data</h2>
+                    <span>Create/Edit/Delete Cloth information</span>
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <div class="row customTitle">
+            <div class="col-lg-3">
+                <h4>Name</h4>
+            </div>
+            <div class="col-lg-3">
+                <h4>Email</h4>
+            </div>
+            <div class="col-lg-4">
+                <h4>Message</h4>
+            </div>
+            <div class="col-lg-2">
+                <h4>Action</h4>
+            </div>
+        </div>
+        <br/>
+        <!-- All item order -->
+        <div id="output-html">
+
+            @if (Model.Count() == 0 || Model == null)
+            {
+                <div style="text-align:center">
+                    <span>No item in your Cart</span>
+                </div>
+
+            }
+            @foreach (ContactMessage message in Model)
+            {
+                <div class="row cart-item">
+                    <div class="col-md-3">
+                        <span>@message.Name</span >
+                    </div>
+                    <div class="col-md-3">
+                        <span>@message.Email</span >
+                    </div>
+                    <div class="col-md-4">
+                        <span>@message.Message.Replace("\\\"", "\"")</span >
+                    </div>
+                    <div class="col-md-2">
+                        <ul class="actionMenuInline">
+                            <li><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#viewExample" data-id="@message.Id"><i class="fa fa-eye"></i></button></li>
+                        </ul>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+            @{
+                var prevDisabled = !Model.HasPreviousPage ? false : true;
+                var nextDisabled = !Model.HasNextPage ? false : true;
+            }
+
+                <div class="pagination">
+                    <ul>
+                        <li>
+                        @if (prevDisabled)
+                        {
+
+                            <a asp-route-id="@(Model.PageIndex - 1)">&lt;</a>
+                        }
+                        </li>
+                        <li>
+                        @if (nextDisabled)
+                        {
+                            <a asp-route-id="@(Model.PageIndex + 1)">></a>
+                        }
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Popup Modal dialog start -->
+<div class="modal fade" id="viewExample" tabindex="-1" role="dialog" aria-labelledby="viewExampleLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="viewExampleLabel">Contact Information data</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Name:</label>
+            <input type="text" class="form-control" id="contact-name" readonly>
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Email:</label>
+            <input type="text" class="form-control" id="contact-email" readonly>
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Message:</label>
+            <textarea class="form-control" id="contact-message" readonly></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        @*<button type="button" class="btn btn-primary">Save</button>*@
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Popup Modal dialog end -->
+
+
+@section Scripts{
+    <script>
+    var contactArray = JSON.parse('@Json.Serialize(@Model)');
+    
+    $('#viewExample').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        var idContact = button.data('id') // Extract info from data-* attributes
+        
+        //find data
+        const targetContact = contactArray.find(x => x.id == idContact);
+
+        //add data into this element
+        var modal = $(this)
+        modal.find('.modal-body #contact-name').val(targetContact.name);
+        modal.find('.modal-body #contact-email').val(targetContact.email);
+        modal.find('.modal-body #contact-message').val(targetContact.message);
+    });
+    </script>
+
+}

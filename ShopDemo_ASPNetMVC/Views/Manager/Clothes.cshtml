@@ -1,0 +1,319 @@
+﻿@using ShopDemo_ASPNetMVC.Data;
+@using ShopDemo_ASPNetMVC.Data.Enum;
+@model PaginatedList<Clothe>
+@{
+    ViewData["Title"] = "Manager Clothes";
+}
+
+<!-- ***** Main Banner Area Start ***** -->
+<div class="page-manager" id="top">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="inner-content">
+                    <h2>Management Clothes</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ***** Main Banner Area End ***** -->
+<section class="section" id="cart">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="section-heading">
+                    <h2>Your Clothes data</h2>
+                    <span>Create/Edit/Delete Cloth information</span>
+                </div>
+            </div>
+            <div class="col-lg-4">
+            </div>
+            <div class="col-lg-2">
+                <div class="section-heading">
+                    <h2>Add new</h2>
+                    <ul>
+                        <li>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createPopup"><i class="fa fa-plus"></i></button>
+                            
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <hr/>
+        <div class="row customTitle">
+            <div class="col-lg-3">
+                <h4>Image</h4>
+            </div>
+            <div class="col-lg-3">
+                <h4>Name</h4>
+            </div>
+            <div class="col-lg-2">
+                <h4>Type</h4>
+            </div>
+            <div class="col-lg-2">
+                <h4>Price</h4>
+            </div>
+            <div class="col-lg-2">
+                <h4>Action</h4>
+            </div>
+        </div>
+        <br/>
+        <!-- All item order -->
+        <div id="output-html">
+            @if (Model.Count() == 0 || Model == null)
+            {
+                    <div style="text-align:center">
+                        <span>No item in your Cart</span>
+                    </div>
+
+            }
+            @foreach (Clothe cloth in Model)
+            {
+                <div class="row cart-item">
+                    <div class="col-md-3">
+                        <img class="cart-image" src="@cloth.Image" />
+                    </div>
+                    <div class="col-md-3">
+                        <span>@cloth.Name</span >
+                    </div>
+                    <div class="col-md-2">
+                        <span>@Enum.GetName(typeof(ClothCategory), cloth.ClotheCategory)</span >
+                    </div>
+                    <div class="col-md-2">
+                        <span>@cloth.Price</span >
+                    </div>
+                    <div class="col-md-2">
+                        <ul class="actionMenuInline">
+                            <li><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#viewExample" data-id="@cloth.Id" data-action="view"><i class="fa fa-eye"></i></button></li>
+                            <li><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#viewExample" data-id="@cloth.Id" data-action="edit"><i class="fa fa-pencil"></i></button></li>
+                            <li><a href="#"><i class="fa fa-trash"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                @{
+                    var prevDisabled = !Model.HasPreviousPage ? false : true;
+                    var nextDisabled = !Model.HasNextPage ? false : true;
+                }
+
+                <div class="pagination">
+                    <ul>
+                        <li>
+                            @if (prevDisabled)
+                            {
+
+                                <a asp-route-id="@(Model.PageIndex - 1)">&lt;</a>
+                            }
+                        </li>
+                        <li>
+                            @if (nextDisabled)
+                            {
+                                <a asp-route-id="@(Model.PageIndex + 1)">></a>
+                            }
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Popup Modal dialog start -->
+<div class="modal fade" id="viewExample" tabindex="-1" role="dialog" aria-labelledby="viewExampleLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="viewExampleLabel">Cloth Information data</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="popup-form" method="POST" asp-controller="Manager" asp-action="UpdateClothes" enctype="multipart/form-data">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Cloth Image:</label>
+            <img src="" id="cloth-image" style="padding-bottom:0.5rem"/>
+            <input type="file" accept="image/*" asp-for="@Model[0].FileImage" class="form-control" id="cloth-fileimage">
+            <input type="text" asp-for="@Model[0].Image" class="form-control" id="cloth-image-input" hidden>
+            <span style="color:red" asp-validation-for="@Model[0].Image"></span>
+          </div>
+          <div class="form-group">
+            <input type="text" asp-for="@Model[0].Id" class="form-control" id="cloth-id" hidden readonly>
+            <label for="message-text" class="col-form-label">Cloth Name:</label>
+            <input type="text" asp-for="@Model[0].Name" class="form-control" id="cloth-name">
+            <span style="color:red" asp-validation-for="@Model[0].Name"></span>
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Type:</label>
+            <select asp-for="@Model[0].ClotheCategory" id="cloth-type">
+              <option value="0">Men</option>
+              <option value="1">Women</option>
+              <option value="2">Kid</option>
+              <option value="3">Accessory</option>
+            </select>
+            @*<input type="text" asp-for="@Model[0].ClotheCategory.Id" class="form-control" id="cloth-type">*@
+            <span style="color:red" asp-validation-for="@Model[0].ClotheCategory"></span>
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Price:</label>
+            <input type="text" asp-for="@Model[0].Price" class="form-control" id="cloth-price">
+            <span style="color:red" asp-validation-for="@Model[0].Price"></span>
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Description:</label>
+            <textarea class="form-control" asp-for="@Model[0].Description" id="cloth-description"></textarea>
+            <span style="color:red" asp-validation-for="@Model[0].Description"></span>
+          </div>
+        </div>
+        <div class="modal-footer">
+            <button id="save-button" type="submit" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Popup Modal dialog end -->
+
+<!-- Popup Modal Create start -->
+<div class="modal fade" id= "createPopup" tabindex="-1" role="dialog" aria-labelledby="createPopupLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createPopupLabel">Cloth Information data</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="popup-form" method="POST" asp-controller="Manager" asp-action="CreateClothes" enctype="multipart/form-data">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Cloth Image:</label>
+            <img src="" id="create-image" style="padding-bottom:0.5rem;width:370px;height:390px"/>
+            <input type="file" accept="image/*" asp-for="@Model[0].FileImage" class="form-control" id="create-image-input" />
+            <input type="text" asp-for="@Model[0].Image" class="form-control" id="create-img" hidden>
+            <span style="color:red" asp-validation-for="@Model[0].Image"></span>
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Cloth Name:</label>
+            <input type="text" asp-for="@Model[0].Name" class="form-control" id="create-name" />
+            <span style="color:red" asp-validation-for="@Model[0].Name"></span>
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Type:</label>
+            <select asp-for="@Model[0].ClotheCategory" id="create-type">
+              <option value="0">Men</option>
+              <option value="1">Women</option>
+              <option value="2">Kid</option>
+              <option value="3">Accessory</option>
+            </select>
+            <span style="color:red" asp-validation-for="@Model[0].ClotheCategory"></span>
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Price:</label>
+            <input type="text" asp-for="@Model[0].Price" class="form-control" id="create-price" />
+            <span style="color:red" asp-validation-for="@Model[0].Price"></span>
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Description:</label>
+            <textarea class="form-control" asp-for="@Model[0].Description" id="create-description" ></textarea>
+            <span style="color:red" asp-validation-for="@Model[0].Description"></span>
+          </div>
+        </div>
+        <div class="modal-footer">
+            <button id="create-button" type="submit" class="btn btn-primary">Create</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+@section Scripts{
+    <script>
+    var clothesArray = JSON.parse('@Json.Serialize(@Model)');
+
+    $('#viewExample').on('show.bs.modal', function (event) {
+
+
+        var button = $(event.relatedTarget) // Button that triggered the modal
+        var idContact = button.data('id') // Extract info from data-* attributes
+        var action = button.data('action') == 'view' ? 1 : 2;
+
+        //find data
+        const targetContact = clothesArray.find(x => x.id == idContact);
+
+        //add data into this element
+        if (action == 1){
+            document.getElementById("cloth-image").readOnly = true;
+            document.getElementById("cloth-name").readOnly = true;
+            document.getElementById("cloth-type").readOnly = true;
+            document.getElementById("cloth-price").readOnly = true;
+            document.getElementById("cloth-description").readOnly = true;
+            document.getElementById("save-button").style.visibility = "hidden";
+            document.getElementById("save-button").disabled = true;
+        }
+        else if (action == 2){
+            document.getElementById("cloth-image").readOnly = false;
+            document.getElementById("cloth-name").readOnly = false;
+            document.getElementById("cloth-type").readOnly = false;
+            document.getElementById("cloth-price").readOnly = false;
+            document.getElementById("cloth-description").readOnly = false;
+            document.getElementById("save-button").style.visibility = "visible";
+            document.getElementById("save-button").disabled = false;
+        }
+        document.getElementById("cloth-id").value = targetContact.id;
+        document.getElementById("cloth-image").src = targetContact.image;
+        document.getElementById("cloth-image-input").value = targetContact.image;
+        document.getElementById("cloth-name").value = targetContact.name;
+        document.getElementById("cloth-type").value = targetContact.clotheCategory;
+        document.getElementById("cloth-price").value = targetContact.price;
+        document.getElementById("cloth-description").value = targetContact.description;
+    });
+        $('#createPopup').on('show.bs.modal', function (event) {
+
+            document.getElementById("create-image").src = "/images/370x390.jpg";
+            document.getElementById("create-img").value = "";
+            document.getElementById("create-name").value = "";
+            document.getElementById("create-type").value = "0";
+            document.getElementById("create-price").value = "0";
+            document.getElementById("create-description").value = "";
+        });
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial"); 
+    }
+    <script type="text/javascript">
+        $('#submit').on('click', function (e) {
+            $('#popup-form').validate();
+            if ($('#popup-form').valid() === true) {
+                $('#popup-form').submit();
+            } else {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        var uploadField = document.getElementById("create-image-input");
+        var uploadFileImageUpdate = document.getElementById("cloth-fileimage");
+        uploadField.onchange = function() {
+            if(this.files[0].size > 2097152){
+                alert("File image upload cannot be exceed 2MB!");
+                this.value = "";
+            };
+        };
+        uploadFileImageUpdate.onchange = function() {
+            if(this.files[0].size > 2097152){
+                alert("File image upload cannot be exceed 2MB!");
+                this.value = "";
+            };
+        };
+    </script>
+}
